@@ -1,0 +1,20 @@
+[
+    {
+        "serviceName": "aService",
+        "url": "http://localhost:5000/query",
+        "tables": [
+            "tableA",
+            "tableB",
+            "tableC"
+        ]
+    },
+    {
+        "serviceName": "bService",
+        "url": "http://localhost:4999/query",
+        "tables": [
+            "tableD",
+            "tableE",
+            "tableF"
+        ]
+    }
+]
