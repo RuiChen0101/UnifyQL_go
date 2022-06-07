@@ -2,14 +2,14 @@ package main
 
 import (
 	"fmt"
-	"regexp"
 )
 
 func main() {
 
-	reg := regexp.MustCompile(`\s*,\s*`)
-	split := reg.Split("tableB ,  tableC ,  tableD", -1)
-	for _, n := range split {
-		fmt.Println(n)
+	table := map[string]bool{
+		"aaaa": true,
 	}
+	_, o := table["bbbbb"]
+	fmt.Println(o)
+	fmt.Println(table["bbbbb"])
 }

@@ -6,8 +6,6 @@ import (
 	"os"
 )
 
-type serviceConfigList []ServiceConfig
-
 type FileServiceConfigSource struct {
 	serviceConfig map[string]ServiceConfig
 	tableMapping  map[string]string
@@ -22,17 +20,17 @@ func NewFileServiceConfigSource(fileName string) (*FileServiceConfigSource, erro
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
-	var configs serviceConfigList
-	json.Unmarshal([]byte(byteValue), &configs)
+	configs := []ServiceConfig{}
+	json.Unmarshal(byteValue, &configs)
 
 	result := FileServiceConfigSource{
 		serviceConfig: map[string]ServiceConfig{},
 		tableMapping:  map[string]string{},
 	}
 	for _, c := range configs {
-		serviceName := c.serviceName
+		serviceName := c.ServiceName
 		result.serviceConfig[serviceName] = c
-		for _, t := range c.tables {
+		for _, t := range c.Tables {
 			result.tableMapping[t] = serviceName
 		}
 	}

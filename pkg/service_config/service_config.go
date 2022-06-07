@@ -1,7 +1,7 @@
 package service_config
 
 type ServiceConfig struct {
-	serviceName string
-	url         string
-	tables      []string
+	ServiceName string   `json:"serviceName"`
+	Url         string   `json:"url"`
+	Tables      []string `json:"tables"`
 }
