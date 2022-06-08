@@ -1,7 +1,6 @@
 package relation_chain
 
 import (
-	"errors"
 	"fmt"
 	"reflect"
 	"regexp"
@@ -26,10 +25,15 @@ func BuildRelationChain(el element.UnifyQLElement) (*RelationChain, error) {
 			return nil, err
 		}
 		if !definedTables[relation.FromTable] || !definedTables[relation.ToTable] {
-			return nil, errors.New(fmt.Sprintf("RelationChain: %s using undefined table", l))
+			return nil, fmt.Errorf("RelationChain: %s using undefined table", l)
 		}
-		completeRelationMap[relation.FromTable][relation.ToTable] = *relation
-		completeRelationMap[relation.ToTable][relation.FromTable] = *relation
+		safeMapAssign(&completeRelationMap, relation.FromTable, relation.ToTable, *relation)
+		safeMapAssign(&completeRelationMap, relation.ToTable, relation.FromTable, RelationChainNode{
+			FromTable: relation.ToTable,
+			FromField: relation.ToField,
+			ToTable:   relation.FromTable,
+			ToField:   relation.FromField,
+		})
 	}
 
 	forwardMap := relationChainMap{}
@@ -39,38 +43,47 @@ func BuildRelationChain(el element.UnifyQLElement) (*RelationChain, error) {
 	visitedTable := map[string]bool{}
 
 	for len(trackingTable) != 0 {
-		t, trackingTable := trackingTable[0], trackingTable[1:]
+		t := trackingTable[0]
+		trackingTable = trackingTable[1:]
 		r, ok := completeRelationMap[t]
 		if !ok {
 			visitedTable[t] = true
 			continue
 		}
 		desc := reflect.ValueOf(r).MapKeys()
-		newDesc := false
 		for _, d := range desc {
 			dStr := d.String()
 			if visitedTable[dStr] {
 				continue
 			}
-			newDesc = true
-			forwardMap[t][dStr] = r[dStr]
+			safeMapAssign(&forwardMap, t, dStr, r[dStr])
+			safeMapAssign(&backwardMap, dStr, t, completeRelationMap[dStr][t])
+			trackingTable = append(trackingTable, dStr)
 		}
+		visitedTable[t] = true
 	}
 
 	result := NewRelationChain(forwardMap, backwardMap)
 	return &result, nil
 }
 
+func safeMapAssign(m *relationChainMap, key1 string, key2 string, value RelationChainNode) {
+	if _, ok := (*m)[key1]; !ok {
+		(*m)[key1] = map[string]RelationChainNode{}
+	}
+	(*m)[key1][key2] = value
+}
+
 func extractRelation(relation string) (*RelationChainNode, error) {
 	reg := regexp.MustCompile(`([^\s]+)\.([^\s]+)\s*=\s*([^\s]+)\.([^\s]+)`)
 	captureGroup := reg.FindStringSubmatch(relation)
-	if len(captureGroup) != 4 {
-		return nil, errors.New("RelationChain: invalid format")
+	if len(captureGroup) != 5 {
+		return nil, fmt.Errorf("RelationChain: %s invalid format", relation)
 	}
 	return &RelationChainNode{
-		FromTable: captureGroup[0],
-		FromField: captureGroup[1],
-		ToTable:   captureGroup[2],
-		ToField:   captureGroup[3],
+		FromTable: captureGroup[1],
+		FromField: captureGroup[2],
+		ToTable:   captureGroup[3],
+		ToField:   captureGroup[4],
 	}, nil
 }
