@@ -2,14 +2,12 @@ package main
 
 import (
 	"fmt"
+	"regexp"
 )
 
 func main() {
 
-	table := map[string]bool{
-		"aaaa": true,
-	}
-	_, o := table["bbbbb"]
-	fmt.Println(o)
-	fmt.Println(table["bbbbb"])
+	c, err := regexp.MatchString(`=|!=|<|<=|>|>=|LIKE`, "=")
+	fmt.Println(c)
+	fmt.Println(err)
 }
