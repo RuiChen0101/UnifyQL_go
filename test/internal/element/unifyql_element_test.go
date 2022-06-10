@@ -85,13 +85,13 @@ func TestExtractComplexQuery(t *testing.T) {
 func TestExtractInvalidFormatError(t *testing.T) {
 	queryStr := "tableA"
 	el, err := element.ExtractElement(queryStr)
-	assert.Equal(t, "Invalid format", err.Error())
+	assert.EqualError(t, err, "Invalid format")
 	assert.Nil(t, el)
 }
 
 func TestExtractInvalidLimitError(t *testing.T) {
 	queryStr := "QUERY tableA LIMIT \"aaa\",\"bbb\""
 	el, err := element.ExtractElement(queryStr)
-	assert.Equal(t, "strconv.Atoi: parsing \"\\\"aaa\\\"\": invalid syntax", err.Error())
+	assert.EqualError(t, err, "strconv.Atoi: parsing \"\\\"aaa\\\"\": invalid syntax")
 	assert.Nil(t, el)
 }

@@ -8,15 +8,16 @@ import (
 )
 
 func TestCreateNewBinaryOperatorNode(t *testing.T) {
-	node, err := expression_tree.NewBinaryOperatorNode("AND")
+	node := expression_tree.BinaryOperatorNode{OpType: "AND"}
 	node.OutputTarget = "tableA"
-	assert.Nil(t, err)
+	assert.Nil(t, node.GetLeftNode())
+	assert.Nil(t, node.GetRightNode())
 	assert.Equal(t, "AND", node.OpType)
 	assert.Equal(t, "tableA", node.OutputTarget)
 }
 
 func TestSetNode(t *testing.T) {
-	node, _ := expression_tree.NewBinaryOperatorNode("AND")
+	node := expression_tree.BinaryOperatorNode{OpType: "AND"}
 	node.SetLeftNode(&expression_tree.BinaryOperatorNode{OpType: "AND"})
 	node.SetRightNode(&expression_tree.BinaryOperatorNode{OpType: "OR"})
 

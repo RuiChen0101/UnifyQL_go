@@ -81,7 +81,7 @@ func TestInvalidFormatError(t *testing.T) {
 		Link:        []string{"tableC.fieldCtableB.fieldB1", "tableD.fieldD=tableA.fieldA1", "tableA.fieldA2=tableB.fieldB2"},
 	}
 	rc, err := relation_chain.BuildRelationChain(el)
-	assert.EqualValues(t, "RelationChain: tableC.fieldCtableB.fieldB1 invalid format", err.Error())
+	assert.EqualError(t, err, "RelationChain: tableC.fieldCtableB.fieldB1 invalid format")
 	assert.Nil(t, rc)
 }
 
@@ -93,6 +93,6 @@ func TestUndefinedTableError(t *testing.T) {
 		Link:        []string{"tableC.fieldC=tableB.fieldB1", "tableD.fieldD=tableA.fieldA1", "tableA.fieldA2=tableB.fieldB2"},
 	}
 	rc, err := relation_chain.BuildRelationChain(el)
-	assert.Equal(t, "RelationChain: tableD.fieldD=tableA.fieldA1 using undefined table", err.Error())
+	assert.EqualError(t, err, "RelationChain: tableD.fieldD=tableA.fieldA1 using undefined table")
 	assert.Nil(t, rc)
 }
