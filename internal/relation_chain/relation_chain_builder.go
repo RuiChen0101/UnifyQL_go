@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"regexp"
 
-	"github.com/RuiChen0101/unfiyql/internal/element"
+	"github.com/RuiChen0101/unfiyql/pkg/element"
 )
 
 func BuildRelationChain(el element.UnifyQLElement) (*RelationChain, error) {

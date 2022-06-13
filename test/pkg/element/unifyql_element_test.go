@@ -3,7 +3,7 @@ package element_test
 import (
 	"testing"
 
-	"github.com/RuiChen0101/unfiyql/internal/element"
+	"github.com/RuiChen0101/unfiyql/pkg/element"
 	"github.com/stretchr/testify/assert"
 )
 

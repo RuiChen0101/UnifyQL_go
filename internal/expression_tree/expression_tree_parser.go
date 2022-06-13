@@ -1,8 +1,8 @@
 package expression_tree
 
 import (
-	"github.com/RuiChen0101/unfiyql/internal/element"
 	"github.com/RuiChen0101/unfiyql/internal/utility"
+	"github.com/RuiChen0101/unfiyql/pkg/element"
 )
 
 func ParseExpressionTree(el element.UnifyQLElement) (ExpressionTreeNode, error) {
