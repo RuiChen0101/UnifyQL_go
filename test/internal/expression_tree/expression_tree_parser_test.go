@@ -30,7 +30,25 @@ func TestParseEmptyWhere(t *testing.T) {
 	assert.EqualValues(t, []int{0, 100}, on.Limit)
 }
 
-func TestParseWithWhere(t *testing.T) {
+func TestParseWithSingleWhere(t *testing.T) {
+	el := element.UnifyQLElement{
+		Operation:   element.UnifyQLOperation.Query,
+		QueryTarget: "tableA",
+		With:        []string{"tableB", "tableC", "tableD"},
+		Link:        []string{"tableC.fieldC=tableB.fieldB1", "tableD.fieldD=tableA.fieldA1", "tableA.fieldA2=tableB.fieldB2"},
+		Where:       "tableD.fieldD1 = 1",
+	}
+	tree, err := expression_tree.ParseExpressionTree(el)
+	assert.Nil(t, err)
+
+	on := tree.(*expression_tree.OutputTargetNode)
+	cn := (*on.GetLeftNode()).(*expression_tree.ConditionNode)
+
+	assert.Equal(t, "tableA", on.OutputTarget)
+	assert.Equal(t, "tableD.fieldD1 = 1", cn.ConditionStr)
+}
+
+func TestParseWithComplexWhere(t *testing.T) {
 	el := element.UnifyQLElement{
 		Operation:   element.UnifyQLOperation.Query,
 		QueryTarget: "tableA",

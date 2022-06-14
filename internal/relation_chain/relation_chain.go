@@ -76,7 +76,6 @@ func (rc *RelationChain) FindRelationPath(from string, to string) *[]RelationCha
 				last := from
 				result := []RelationChainNode{}
 				for _, p := range path {
-					fmt.Printf("%s, %s", last, p)
 					result = append(result, rc.forwardRelationMap[last][p])
 					last = p
 				}

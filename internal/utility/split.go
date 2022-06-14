@@ -9,7 +9,7 @@ func RegSplit(text string, regStr string) []string {
 	reg := regexp.MustCompile(regStr)
 	indexes := reg.FindAllStringIndex(text, -1)
 	if len(indexes) == 0 {
-		return []string{}
+		return []string{text}
 	}
 	lastIndex := 0
 	result := []string{}

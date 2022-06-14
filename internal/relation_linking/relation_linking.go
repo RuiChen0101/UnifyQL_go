@@ -44,7 +44,6 @@ func (rl *RelationLinker) finalize(target string) error {
 
 	if rl.relationChain.IsParentOf(target, rl.resultTable) {
 		path := rl.relationChain.FindRelationPath(rl.resultTable, target)
-		fmt.Println(path)
 		for _, p := range *path {
 			relationNode := expression_tree.RelationNode{
 				FromTable: p.FromTable,
