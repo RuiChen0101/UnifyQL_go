@@ -16,7 +16,7 @@ func TestParseEmptyWhere(t *testing.T) {
 		OrderBy:     []string{"tableA.fieldA3 DESC"},
 		Limit:       []int{0, 100},
 	}
-	tree, err := expression_tree.ParseExpressionTree(el)
+	tree, err := expression_tree.ParseExpressionTree(&el)
 	assert.Nil(t, err)
 
 	on := tree.(*expression_tree.OutputTargetNode)
@@ -38,7 +38,7 @@ func TestParseWithSingleWhere(t *testing.T) {
 		Link:        []string{"tableC.fieldC=tableB.fieldB1", "tableD.fieldD=tableA.fieldA1", "tableA.fieldA2=tableB.fieldB2"},
 		Where:       "tableD.fieldD1 = 1",
 	}
-	tree, err := expression_tree.ParseExpressionTree(el)
+	tree, err := expression_tree.ParseExpressionTree(&el)
 	assert.Nil(t, err)
 
 	on := tree.(*expression_tree.OutputTargetNode)
@@ -54,7 +54,7 @@ func TestParseWithComplexWhere(t *testing.T) {
 		QueryTarget: "tableA",
 		Where:       "(tableB.fieldB & 2) != 0 AND (tableA.fieldA IN (\"0912\",\"0934\") OR tableC.fieldC LIKE \"O%\")",
 	}
-	tree, err := expression_tree.ParseExpressionTree(el)
+	tree, err := expression_tree.ParseExpressionTree(&el)
 	assert.Nil(t, err)
 
 	on := tree.(*expression_tree.OutputTargetNode)
@@ -73,7 +73,7 @@ func TestParseWithComplexWhere(t *testing.T) {
 }
 
 func TestAuthorizationBypassError(t *testing.T) {
-	tree, err := expression_tree.ParseExpressionTree(element.UnifyQLElement{
+	tree, err := expression_tree.ParseExpressionTree(&element.UnifyQLElement{
 		Operation:   element.UnifyQLOperation.Query,
 		QueryTarget: "tableA",
 		Where:       "tableA.fieldA=\"valueA\" OR 1=1--\"",
@@ -81,7 +81,7 @@ func TestAuthorizationBypassError(t *testing.T) {
 	assert.Nil(t, tree)
 	assert.EqualError(t, err, "ExpressionTreeBuilder: empty tree")
 
-	tree, err = expression_tree.ParseExpressionTree(element.UnifyQLElement{
+	tree, err = expression_tree.ParseExpressionTree(&element.UnifyQLElement{
 		Operation:   element.UnifyQLOperation.Query,
 		QueryTarget: "tableA",
 		Where:       "tableA.fieldA=123 OR 1=1--",
@@ -89,7 +89,7 @@ func TestAuthorizationBypassError(t *testing.T) {
 	assert.Nil(t, tree)
 	assert.EqualError(t, err, "ExpressionTreeBuilder: empty tree")
 
-	tree, err = expression_tree.ParseExpressionTree(element.UnifyQLElement{
+	tree, err = expression_tree.ParseExpressionTree(&element.UnifyQLElement{
 		Operation:   element.UnifyQLOperation.Query,
 		QueryTarget: "tableA",
 		Where:       "tableA.fieldA IN (123) OR 1=1--)",
@@ -99,7 +99,7 @@ func TestAuthorizationBypassError(t *testing.T) {
 }
 
 func TestMaliciousCommandsError(t *testing.T) {
-	tree, err := expression_tree.ParseExpressionTree(element.UnifyQLElement{
+	tree, err := expression_tree.ParseExpressionTree(&element.UnifyQLElement{
 		Operation:   element.UnifyQLOperation.Query,
 		QueryTarget: "tableA",
 		Where:       "tableA.fieldA=\"valueA\"; DROP TABLE tableA--\"",
@@ -107,7 +107,7 @@ func TestMaliciousCommandsError(t *testing.T) {
 	assert.Nil(t, tree)
 	assert.EqualError(t, err, "ExpressionTreeBuilder: empty tree")
 
-	tree, err = expression_tree.ParseExpressionTree(element.UnifyQLElement{
+	tree, err = expression_tree.ParseExpressionTree(&element.UnifyQLElement{
 		Operation:   element.UnifyQLOperation.Query,
 		QueryTarget: "tableA",
 		Where:       "tableA.fieldA=123; DROP TABLE tableA--",
@@ -115,7 +115,7 @@ func TestMaliciousCommandsError(t *testing.T) {
 	assert.Nil(t, tree)
 	assert.EqualError(t, err, "ExpressionTreeBuilder: empty tree")
 
-	tree, err = expression_tree.ParseExpressionTree(element.UnifyQLElement{
+	tree, err = expression_tree.ParseExpressionTree(&element.UnifyQLElement{
 		Operation:   element.UnifyQLOperation.Query,
 		QueryTarget: "tableA",
 		Where:       "tableA.fieldA IN (123); DROP TABLE tableA--)",

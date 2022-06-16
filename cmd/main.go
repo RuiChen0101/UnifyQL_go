@@ -2,12 +2,15 @@ package main
 
 import (
 	"fmt"
-	"regexp"
 )
 
 func main() {
 
-	c, err := regexp.MatchString(`=|!=|<|<=|>|>=|LIKE`, "=")
-	fmt.Println(c)
-	fmt.Println(err)
+	m := map[string]interface{}{
+		"a": 123,
+		"b": "456",
+	}
+	a, ok := m["b"].(string)
+	fmt.Println(a)
+	fmt.Println(ok)
 }

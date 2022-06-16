@@ -27,13 +27,13 @@ func TestGenerateWithoutCondition(t *testing.T) {
 	conf, _ := service_config.NewFileServiceConfigSource(path)
 	lookup := service_lookup.NewServiceLookup(conf)
 
-	tree, _ := expression_tree.ParseExpressionTree(el)
-	rc, _ := relation_chain.BuildRelationChain(el)
+	tree, _ := expression_tree.ParseExpressionTree(&el)
+	rc, _ := relation_chain.BuildRelationChain(&el)
 	linker := relation_linking.NewRelationLinker(rc, tree)
 	linker.Link()
 	linkedTree := linker.GetExpressionTree()
 
-	plan, err := execution_plan.GenerateExecutionPlan(&linkedTree, &lookup, fakeId)
+	plan, err := execution_plan.GenerateExecutionPlan(linkedTree, &lookup, fakeId)
 
 	assert.Nil(t, err)
 
@@ -54,13 +54,13 @@ func TestGenerateSpecialOperation(t *testing.T) {
 	conf, _ := service_config.NewFileServiceConfigSource(path)
 	lookup := service_lookup.NewServiceLookup(conf)
 
-	tree, _ := expression_tree.ParseExpressionTree(el)
-	rc, _ := relation_chain.BuildRelationChain(el)
+	tree, _ := expression_tree.ParseExpressionTree(&el)
+	rc, _ := relation_chain.BuildRelationChain(&el)
 	linker := relation_linking.NewRelationLinker(rc, tree)
 	linker.Link()
 	linkedTree := linker.GetExpressionTree()
 
-	plan, err := execution_plan.GenerateExecutionPlan(&linkedTree, &lookup, fakeId)
+	plan, err := execution_plan.GenerateExecutionPlan(linkedTree, &lookup, fakeId)
 
 	assert.Nil(t, err)
 
@@ -81,13 +81,13 @@ func TestGenerateSingleConditionInSameService(t *testing.T) {
 	conf, _ := service_config.NewFileServiceConfigSource(path)
 	lookup := service_lookup.NewServiceLookup(conf)
 
-	tree, _ := expression_tree.ParseExpressionTree(el)
-	rc, _ := relation_chain.BuildRelationChain(el)
+	tree, _ := expression_tree.ParseExpressionTree(&el)
+	rc, _ := relation_chain.BuildRelationChain(&el)
 	linker := relation_linking.NewRelationLinker(rc, tree)
 	linker.Link()
 	linkedTree := linker.GetExpressionTree()
 
-	plan, err := execution_plan.GenerateExecutionPlan(&linkedTree, &lookup, fakeId)
+	plan, err := execution_plan.GenerateExecutionPlan(linkedTree, &lookup, fakeId)
 	assert.Nil(t, err)
 
 	assert.Equal(t, element.UnifyQLOperation.Query, plan.Operation)
@@ -110,13 +110,13 @@ func TestGenerateSingleConditionFromDifferentService(t *testing.T) {
 	conf, _ := service_config.NewFileServiceConfigSource(path)
 	lookup := service_lookup.NewServiceLookup(conf)
 
-	tree, _ := expression_tree.ParseExpressionTree(el)
-	rc, _ := relation_chain.BuildRelationChain(el)
+	tree, _ := expression_tree.ParseExpressionTree(&el)
+	rc, _ := relation_chain.BuildRelationChain(&el)
 	linker := relation_linking.NewRelationLinker(rc, tree)
 	linker.Link()
 	linkedTree := linker.GetExpressionTree()
 
-	plan, err := execution_plan.GenerateExecutionPlan(&linkedTree, &lookup, fakeId)
+	plan, err := execution_plan.GenerateExecutionPlan(linkedTree, &lookup, fakeId)
 	assert.Nil(t, err)
 
 	depPlan := plan.Dependency["12345678"]
@@ -139,13 +139,13 @@ func TestGenerateMultipleCondition(t *testing.T) {
 	conf, _ := service_config.NewFileServiceConfigSource(path)
 	lookup := service_lookup.NewServiceLookup(conf)
 
-	tree, _ := expression_tree.ParseExpressionTree(el)
-	rc, _ := relation_chain.BuildRelationChain(el)
+	tree, _ := expression_tree.ParseExpressionTree(&el)
+	rc, _ := relation_chain.BuildRelationChain(&el)
 	linker := relation_linking.NewRelationLinker(rc, tree)
 	linker.Link()
 	linkedTree := linker.GetExpressionTree()
 
-	plan, err := execution_plan.GenerateExecutionPlan(&linkedTree, &lookup, fakeId)
+	plan, err := execution_plan.GenerateExecutionPlan(linkedTree, &lookup, fakeId)
 	assert.Nil(t, err)
 
 	depPlan := plan.Dependency["12345678"]

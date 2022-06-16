@@ -15,7 +15,7 @@ func TestBuildRelationChain(t *testing.T) {
 		With:        []string{"tableB", "tableC", "tableD"},
 		Link:        []string{"tableC.fieldC=tableB.fieldB1", "tableD.fieldD=tableA.fieldA1", "tableA.fieldA2=tableB.fieldB2"},
 	}
-	rc, err := relation_chain.BuildRelationChain(el)
+	rc, err := relation_chain.BuildRelationChain(&el)
 	assert.Nil(t, err)
 
 	forwardMap := rc.GetForwardRelationMap()
@@ -65,7 +65,7 @@ func TestBuildRelationChainWithoutWithAndLink(t *testing.T) {
 		Operation:   element.UnifyQLOperation.Query,
 		QueryTarget: "tableA",
 	}
-	rc, err := relation_chain.BuildRelationChain(el)
+	rc, err := relation_chain.BuildRelationChain(&el)
 	assert.Nil(t, err)
 
 	emptyMap := map[string]map[string]relation_chain.RelationChainNode{}
@@ -80,7 +80,7 @@ func TestInvalidFormatError(t *testing.T) {
 		With:        []string{"tableB", "tableC", "tableD"},
 		Link:        []string{"tableC.fieldCtableB.fieldB1", "tableD.fieldD=tableA.fieldA1", "tableA.fieldA2=tableB.fieldB2"},
 	}
-	rc, err := relation_chain.BuildRelationChain(el)
+	rc, err := relation_chain.BuildRelationChain(&el)
 	assert.EqualError(t, err, "RelationChain: tableC.fieldCtableB.fieldB1 invalid format")
 	assert.Nil(t, rc)
 }
@@ -92,7 +92,7 @@ func TestUndefinedTableError(t *testing.T) {
 		With:        []string{"tableB", "tableC"},
 		Link:        []string{"tableC.fieldC=tableB.fieldB1", "tableD.fieldD=tableA.fieldA1", "tableA.fieldA2=tableB.fieldB2"},
 	}
-	rc, err := relation_chain.BuildRelationChain(el)
+	rc, err := relation_chain.BuildRelationChain(&el)
 	assert.EqualError(t, err, "RelationChain: tableD.fieldD=tableA.fieldA1 using undefined table")
 	assert.Nil(t, rc)
 }

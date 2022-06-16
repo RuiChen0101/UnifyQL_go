@@ -8,7 +8,7 @@ import (
 	"github.com/RuiChen0101/unfiyql/pkg/element"
 )
 
-func BuildRelationChain(el element.UnifyQLElement) (*RelationChain, error) {
+func BuildRelationChain(el *element.UnifyQLElement) (*RelationChain, error) {
 	completeRelationMap := relationChainMap{}
 
 	definedTables := map[string]bool{

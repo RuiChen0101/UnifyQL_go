@@ -5,7 +5,7 @@ import (
 	"github.com/RuiChen0101/unfiyql/pkg/element"
 )
 
-func ParseExpressionTree(el element.UnifyQLElement) (ExpressionTreeNode, error) {
+func ParseExpressionTree(el *element.UnifyQLElement) (ExpressionTreeNode, error) {
 	outputNode := OutputTargetNode{
 		Operation:    el.Operation,
 		OutputTarget: el.QueryTarget,
