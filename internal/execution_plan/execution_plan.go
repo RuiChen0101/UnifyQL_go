@@ -84,8 +84,8 @@ func buildBinaryOperator(node *expression_tree.BinaryOperatorNode, lookup *servi
 	plan := &ExecutionPlan{
 		Operation:  element.UnifyQLOperation.Query,
 		Query:      node.OutputTarget,
-		With:       append(leftPlan.With, rightPlan.With...),
-		Link:       append(leftPlan.Link, rightPlan.Link...),
+		With:       unique(append(leftPlan.With, rightPlan.With...)),
+		Link:       unique(append(leftPlan.Link, rightPlan.Link...)),
 		Where:      fmt.Sprintf("(%s %s %s)", leftPlan.Where, node.OpType, rightPlan.Where),
 		Dependency: leftPlan.Dependency,
 	}
@@ -111,26 +111,39 @@ func buildRelation(node *expression_tree.RelationNode, lookup *service_lookup.Se
 	if err != nil {
 		return nil, err
 	}
-
+	var newPlan ExecutionPlan
 	if lookup.IsAllFromSameService([]string{plan.Query, node.ToTable}) {
-		return &ExecutionPlan{
+		newPlan = ExecutionPlan{
 			Operation:  element.UnifyQLOperation.Query,
 			Query:      node.ToTable,
-			With:       append(plan.With, plan.Query),
-			Link:       append(plan.Link, fmt.Sprintf("%s.%s=%s.%s", node.FromTable, node.FromField, node.ToTable, node.ToField)),
+			With:       unique(append(plan.With, plan.Query)),
+			Link:       unique(append(plan.Link, fmt.Sprintf("%s.%s=%s.%s", node.FromTable, node.FromField, node.ToTable, node.ToField))),
 			Where:      plan.Where,
 			Dependency: plan.Dependency,
-		}, nil
+		}
 	} else {
 		plan.Query = node.FromTable + "." + node.FromField
 		dependencyId := idGenerator.NanoId8()
-		return &ExecutionPlan{
+		newPlan = ExecutionPlan{
 			Operation: element.UnifyQLOperation.Query,
 			Query:     node.ToTable,
 			Where:     fmt.Sprintf("%s.%s IN {%s}", node.ToTable, node.ToField, dependencyId),
 			Dependency: map[string]ExecutionPlan{
 				dependencyId: *plan,
 			},
-		}, nil
+		}
 	}
+	return &newPlan, nil
+}
+
+func unique(s []string) []string {
+	inResult := make(map[string]bool)
+	var result []string
+	for _, str := range s {
+		if _, ok := inResult[str]; !ok {
+			inResult[str] = true
+			result = append(result, str)
+		}
+	}
+	return result
 }

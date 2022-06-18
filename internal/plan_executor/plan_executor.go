@@ -39,8 +39,10 @@ func ExecutePlan(id string, executionPlan *execution_plan.ExecutionPlan, service
 		}(id, executionPlan.Dependency[id], serviceLookup, fetchProxy)
 	}
 	wg.Wait()
-	if err := <-errs; err != nil {
-		return nil, err
+	if len(errs) != 0 {
+		if err := <-errs; err != nil {
+			return nil, err
+		}
 	}
 	splitQuery := strings.Split(executionPlan.Query, ".")
 	targetTable := splitQuery[0]
@@ -62,7 +64,7 @@ func ExecutePlan(id string, executionPlan *execution_plan.ExecutionPlan, service
 
 	result := []interface{}{}
 
-	if targetField != "" {
+	if targetField != "" && id != "root" {
 		for _, d := range resData {
 			result = append(result, d[targetField])
 		}
@@ -84,7 +86,7 @@ func convertExecutionPlanToUnifyQL(plan *execution_plan.ExecutionPlan, dependenc
 	case element.UnifyQLOperation.Query:
 		result = append(result, "QUERY "+plan.Query)
 	case element.UnifyQLOperation.Count:
-		result = append(result, "COUNT"+plan.Query)
+		result = append(result, "COUNT "+plan.Query)
 	case element.UnifyQLOperation.Sum:
 		result = append(result, "SUM "+plan.Query)
 	}
@@ -94,14 +96,14 @@ func convertExecutionPlanToUnifyQL(plan *execution_plan.ExecutionPlan, dependenc
 	if len(plan.Link) != 0 {
 		result = append(result, "LINK "+strings.Join(plan.Link, ","))
 	}
-	if plan.Where == "" {
+	if plan.Where != "" {
 		result = append(result, "WHERE "+replaceDependency(plan.Where, dependencyIds, dependency))
 	}
 	if len(plan.OrderBy) != 0 {
 		result = append(result, "ORDER BY "+strings.Join(plan.OrderBy, ","))
 	}
 	if len(plan.Limit) == 2 {
-		result = append(result, fmt.Sprintf("LIMIT %d %d", plan.Limit[0], plan.Limit[1]))
+		result = append(result, fmt.Sprintf("LIMIT %d,%d", plan.Limit[0], plan.Limit[1]))
 	}
 	return strings.Join(result, " ")
 }
@@ -111,10 +113,10 @@ func replaceDependency(where string, dependencyIds []string, dependency map[stri
 	for _, id := range dependencyIds {
 		data := []string{}
 		for _, d := range dependency[id] {
-			if i, ok := d.(string); ok {
-				data = append(data, string(i))
+			if s, ok := d.(string); ok {
+				data = append(data, "\""+s+"\"")
 			} else {
-				data = append(data, "\""+d.(string)+"\"")
+				data = append(data, fmt.Sprintf("%v", d))
 			}
 		}
 		replace := ""
