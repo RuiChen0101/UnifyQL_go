@@ -3,8 +3,8 @@ package relation_chain_test
 import (
 	"testing"
 
-	"github.com/RuiChen0101/unfiyql/internal/relation_chain"
-	"github.com/RuiChen0101/unfiyql/pkg/element"
+	"github.com/RuiChen0101/UnifyQL_go/internal/relation_chain"
+	"github.com/RuiChen0101/UnifyQL_go/pkg/element"
 	"github.com/stretchr/testify/assert"
 )
 

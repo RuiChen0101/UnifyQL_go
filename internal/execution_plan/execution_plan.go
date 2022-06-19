@@ -4,10 +4,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/RuiChen0101/unfiyql/internal/expression_tree"
-	"github.com/RuiChen0101/unfiyql/internal/service_lookup"
-	"github.com/RuiChen0101/unfiyql/internal/utility"
-	"github.com/RuiChen0101/unfiyql/pkg/element"
+	"github.com/RuiChen0101/UnifyQL_go/internal/expression_tree"
+	"github.com/RuiChen0101/UnifyQL_go/internal/service_lookup"
+	"github.com/RuiChen0101/UnifyQL_go/internal/utility"
+	"github.com/RuiChen0101/UnifyQL_go/pkg/element"
 )
 
 type ExecutionPlan struct {

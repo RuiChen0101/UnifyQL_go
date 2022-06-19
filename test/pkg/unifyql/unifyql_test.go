@@ -4,9 +4,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/RuiChen0101/unfiyql/pkg/service_config"
-	"github.com/RuiChen0101/unfiyql/pkg/unifyql"
-	"github.com/RuiChen0101/unfiyql/test/fake"
+	"github.com/RuiChen0101/UnifyQL_go/pkg/service_config"
+	"github.com/RuiChen0101/UnifyQL_go/pkg/unifyql"
+	"github.com/RuiChen0101/UnifyQL_go/test/fake"
 	"github.com/stretchr/testify/assert"
 )
 

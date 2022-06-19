@@ -3,7 +3,7 @@ package converter_test
 import (
 	"testing"
 
-	"github.com/RuiChen0101/unfiyql/pkg/converter"
+	"github.com/RuiChen0101/UnifyQL_go/pkg/converter"
 	"github.com/stretchr/testify/assert"
 )
 

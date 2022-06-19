@@ -4,8 +4,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/RuiChen0101/unfiyql/internal/service_lookup"
-	"github.com/RuiChen0101/unfiyql/pkg/service_config"
+	"github.com/RuiChen0101/UnifyQL_go/internal/service_lookup"
+	"github.com/RuiChen0101/UnifyQL_go/pkg/service_config"
 	"github.com/stretchr/testify/assert"
 )
 

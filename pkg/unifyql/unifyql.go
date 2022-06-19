@@ -3,15 +3,15 @@ package unifyql
 import (
 	"strings"
 
-	"github.com/RuiChen0101/unfiyql/internal/execution_plan"
-	"github.com/RuiChen0101/unfiyql/internal/expression_tree"
-	"github.com/RuiChen0101/unfiyql/internal/plan_executor"
-	"github.com/RuiChen0101/unfiyql/internal/relation_chain"
-	"github.com/RuiChen0101/unfiyql/internal/relation_linking"
-	"github.com/RuiChen0101/unfiyql/internal/service_lookup"
-	"github.com/RuiChen0101/unfiyql/internal/utility"
-	"github.com/RuiChen0101/unfiyql/pkg/element"
-	"github.com/RuiChen0101/unfiyql/pkg/service_config"
+	"github.com/RuiChen0101/UnifyQL_go/internal/execution_plan"
+	"github.com/RuiChen0101/UnifyQL_go/internal/expression_tree"
+	"github.com/RuiChen0101/UnifyQL_go/internal/plan_executor"
+	"github.com/RuiChen0101/UnifyQL_go/internal/relation_chain"
+	"github.com/RuiChen0101/UnifyQL_go/internal/relation_linking"
+	"github.com/RuiChen0101/UnifyQL_go/internal/service_lookup"
+	"github.com/RuiChen0101/UnifyQL_go/internal/utility"
+	"github.com/RuiChen0101/UnifyQL_go/pkg/element"
+	"github.com/RuiChen0101/UnifyQL_go/pkg/service_config"
 )
 
 func Query(uql string, configSource service_config.ServiceConfigSource, fetchProxy utility.FetchProxy) ([]interface{}, error) {

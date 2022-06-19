@@ -3,10 +3,10 @@ package relation_linking_test
 import (
 	"testing"
 
-	"github.com/RuiChen0101/unfiyql/internal/expression_tree"
-	"github.com/RuiChen0101/unfiyql/internal/relation_chain"
-	"github.com/RuiChen0101/unfiyql/internal/relation_linking"
-	"github.com/RuiChen0101/unfiyql/pkg/element"
+	"github.com/RuiChen0101/UnifyQL_go/internal/expression_tree"
+	"github.com/RuiChen0101/UnifyQL_go/internal/relation_chain"
+	"github.com/RuiChen0101/UnifyQL_go/internal/relation_linking"
+	"github.com/RuiChen0101/UnifyQL_go/pkg/element"
 	"github.com/stretchr/testify/assert"
 )
 

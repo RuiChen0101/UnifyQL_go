@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/RuiChen0101/unfiyql/internal/expression_tree"
-	"github.com/RuiChen0101/unfiyql/internal/relation_chain"
+	"github.com/RuiChen0101/UnifyQL_go/internal/expression_tree"
+	"github.com/RuiChen0101/UnifyQL_go/internal/relation_chain"
 )
 
 type RelationLinker struct {

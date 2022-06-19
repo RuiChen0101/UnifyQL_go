@@ -7,10 +7,10 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/RuiChen0101/unfiyql/internal/execution_plan"
-	"github.com/RuiChen0101/unfiyql/internal/service_lookup"
-	"github.com/RuiChen0101/unfiyql/internal/utility"
-	"github.com/RuiChen0101/unfiyql/pkg/element"
+	"github.com/RuiChen0101/UnifyQL_go/internal/execution_plan"
+	"github.com/RuiChen0101/UnifyQL_go/internal/service_lookup"
+	"github.com/RuiChen0101/UnifyQL_go/internal/utility"
+	"github.com/RuiChen0101/UnifyQL_go/pkg/element"
 )
 
 type executionResult struct {

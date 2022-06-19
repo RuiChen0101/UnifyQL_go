@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/RuiChen0101/unfiyql/internal/utility"
+	"github.com/RuiChen0101/UnifyQL_go/internal/utility"
 )
 
 var UnifyQLOperation = struct {
