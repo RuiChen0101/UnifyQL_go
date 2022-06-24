@@ -25,7 +25,7 @@ func TestConvertCountQuery(t *testing.T) {
 	queryStr := "COUNT tableA"
 	sql, err := converter.ConvertToSQL(queryStr)
 	assert.Nil(t, err)
-	assert.Equal(t, "SELECT count(tableA.*) count FROM tableA", sql)
+	assert.Equal(t, "SELECT count(*) count FROM tableA", sql)
 }
 
 func TestConvertSumQuery(t *testing.T) {
@@ -36,6 +36,13 @@ func TestConvertSumQuery(t *testing.T) {
 }
 
 func TestConvertComplexQuery(t *testing.T) {
+	queryStr := "QUERY tableA WITH tableB, tableC, tableD LINK tableC.fieldC=tableB.fieldB1,tableD.fieldD=tableA.fieldA1,tableA.fieldA2=tableB.fieldB2 WHERE tableD.fieldD1 != 0"
+	sql, err := converter.ConvertToSQL(queryStr)
+	assert.Nil(t, err)
+	assert.Equal(t, "SELECT tableA.* FROM tableB,tableC,tableD,tableA WHERE tableC.fieldC=tableB.fieldB1 AND tableD.fieldD=tableA.fieldA1 AND tableA.fieldA2=tableB.fieldB2 AND tableD.fieldD1 != 0", sql)
+}
+
+func TestConvertComplexQuery2(t *testing.T) {
 	queryStr := "QUERY tableA WITH tableB, tableC, tableD LINK tableC.fieldC=tableB.fieldB1,tableD.fieldD=tableA.fieldA1,tableA.fieldA2=tableB.fieldB2 WHERE tableD.fieldD1 != 0 ORDER BY tableA.fieldA4 DESC LIMIT 0,100"
 	sql, err := converter.ConvertToSQL(queryStr)
 	assert.Nil(t, err)

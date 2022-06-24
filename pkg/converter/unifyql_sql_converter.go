@@ -13,6 +13,10 @@ func ConvertToSQL(unifyQl string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	return ConvertToSQLByElement(el)
+}
+
+func ConvertToSQLByElement(el *element.UnifyQLElement) (string, error) {
 	result := []string{}
 	el.With = append(el.With, el.QueryTarget)
 	switch el.Operation {
@@ -23,7 +27,7 @@ func ConvertToSQL(unifyQl string) (string, error) {
 			result = append(result, fmt.Sprintf("SELECT %s.*", el.QueryTarget))
 		}
 	case element.UnifyQLOperation.Count:
-		result = append(result, fmt.Sprintf("SELECT count(%s.*) count", el.QueryTarget))
+		result = append(result, "SELECT count(*) count")
 	case element.UnifyQLOperation.Sum:
 		if el.QueryField == "" {
 			return "", errors.New("Invalid format")
@@ -31,11 +35,11 @@ func ConvertToSQL(unifyQl string) (string, error) {
 		result = append(result, fmt.Sprintf("SELECT sum(%s.%s) sum", el.QueryTarget, el.QueryField))
 	}
 	result = append(result, fmt.Sprintf("FROM %s", strings.Join(el.With, ",")))
-	if len(el.Limit) != 0 {
+	if len(el.Link) != 0 {
 		result = append(result, fmt.Sprintf("WHERE %s", strings.Join(el.Link, " AND ")))
 	}
 	if el.Where != "" {
-		if len(el.Limit) != 0 {
+		if len(el.Link) != 0 {
 			result = append(result, "AND")
 		} else {
 			result = append(result, "WHERE")
