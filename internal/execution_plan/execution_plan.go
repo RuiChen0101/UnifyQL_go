@@ -4,10 +4,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/RuiChen0101/unfiyql/internal/expression_tree"
-	"github.com/RuiChen0101/unfiyql/internal/service_lookup"
-	"github.com/RuiChen0101/unfiyql/internal/utility"
-	"github.com/RuiChen0101/unfiyql/pkg/element"
+	"github.com/RuiChen0101/UnifyQL_go/internal/expression_tree"
+	"github.com/RuiChen0101/UnifyQL_go/internal/service_lookup"
+	"github.com/RuiChen0101/UnifyQL_go/internal/utility"
+	"github.com/RuiChen0101/UnifyQL_go/pkg/element"
 )
 
 type ExecutionPlan struct {
@@ -21,14 +21,14 @@ type ExecutionPlan struct {
 	Dependency map[string]ExecutionPlan
 }
 
-func GenerateExecutionPlan(tree *expression_tree.ExpressionTreeNode, lookup *service_lookup.ServiceLookup, idGenerator utility.IdGenerator) (*ExecutionPlan, error) {
-	if node, ok := (*tree).(*expression_tree.OutputTargetNode); ok {
+func GenerateExecutionPlan(tree expression_tree.ExpressionTreeNode, lookup *service_lookup.ServiceLookup, idGenerator utility.IdGenerator) (*ExecutionPlan, error) {
+	if node, ok := tree.(*expression_tree.OutputTargetNode); ok {
 		return buildOutputTarget(node, lookup, idGenerator)
-	} else if node, ok := (*tree).(*expression_tree.BinaryOperatorNode); ok {
+	} else if node, ok := tree.(*expression_tree.BinaryOperatorNode); ok {
 		return buildBinaryOperator(node, lookup, idGenerator)
-	} else if node, ok := (*tree).(*expression_tree.ConditionNode); ok {
+	} else if node, ok := tree.(*expression_tree.ConditionNode); ok {
 		return buildCondition(node, lookup, idGenerator)
-	} else if node, ok := (*tree).(*expression_tree.RelationNode); ok {
+	} else if node, ok := tree.(*expression_tree.RelationNode); ok {
 		return buildRelation(node, lookup, idGenerator)
 	}
 	return nil, errors.New("ExecutionPlan: Invalid expression tree")
@@ -49,7 +49,7 @@ func buildOutputTarget(node *expression_tree.OutputTargetNode, lookup *service_l
 			Limit:     node.Limit,
 		}, nil
 	}
-	plan, err := GenerateExecutionPlan(node.GetLeftNode(), lookup, idGenerator)
+	plan, err := GenerateExecutionPlan(*node.GetLeftNode(), lookup, idGenerator)
 
 	if err != nil {
 		return nil, err
@@ -71,12 +71,12 @@ func buildBinaryOperator(node *expression_tree.BinaryOperatorNode, lookup *servi
 	if node.GetLeftNode() == nil || node.GetRightNode() == nil {
 		return nil, errors.New("ExecutionPlan: Invalid expression tree")
 	}
-	leftPlan, err := GenerateExecutionPlan(node.GetLeftNode(), lookup, idGenerator)
+	leftPlan, err := GenerateExecutionPlan(*node.GetLeftNode(), lookup, idGenerator)
 	if err != nil {
 		return nil, err
 	}
 
-	rightPlan, err := GenerateExecutionPlan(node.GetRightNode(), lookup, idGenerator)
+	rightPlan, err := GenerateExecutionPlan(*node.GetRightNode(), lookup, idGenerator)
 	if err != nil {
 		return nil, err
 	}
@@ -84,8 +84,8 @@ func buildBinaryOperator(node *expression_tree.BinaryOperatorNode, lookup *servi
 	plan := &ExecutionPlan{
 		Operation:  element.UnifyQLOperation.Query,
 		Query:      node.OutputTarget,
-		With:       append(leftPlan.With, rightPlan.With...),
-		Link:       append(leftPlan.Link, rightPlan.Link...),
+		With:       unique(append(leftPlan.With, rightPlan.With...)),
+		Link:       unique(append(leftPlan.Link, rightPlan.Link...)),
 		Where:      fmt.Sprintf("(%s %s %s)", leftPlan.Where, node.OpType, rightPlan.Where),
 		Dependency: leftPlan.Dependency,
 	}
@@ -107,30 +107,43 @@ func buildCondition(node *expression_tree.ConditionNode, lookup *service_lookup.
 }
 
 func buildRelation(node *expression_tree.RelationNode, lookup *service_lookup.ServiceLookup, idGenerator utility.IdGenerator) (*ExecutionPlan, error) {
-	plan, err := GenerateExecutionPlan(node.GetLeftNode(), lookup, idGenerator)
+	plan, err := GenerateExecutionPlan(*node.GetLeftNode(), lookup, idGenerator)
 	if err != nil {
 		return nil, err
 	}
-
+	var newPlan ExecutionPlan
 	if lookup.IsAllFromSameService([]string{plan.Query, node.ToTable}) {
-		return &ExecutionPlan{
+		newPlan = ExecutionPlan{
 			Operation:  element.UnifyQLOperation.Query,
 			Query:      node.ToTable,
-			With:       append(plan.With, plan.Query),
-			Link:       append(plan.Link, fmt.Sprintf("%s.%s=%s.%s", node.FromTable, node.FromField, node.ToTable, node.ToField)),
+			With:       unique(append(plan.With, plan.Query)),
+			Link:       unique(append(plan.Link, fmt.Sprintf("%s.%s=%s.%s", node.FromTable, node.FromField, node.ToTable, node.ToField))),
 			Where:      plan.Where,
 			Dependency: plan.Dependency,
-		}, nil
+		}
 	} else {
 		plan.Query = node.FromTable + "." + node.FromField
 		dependencyId := idGenerator.NanoId8()
-		return &ExecutionPlan{
+		newPlan = ExecutionPlan{
 			Operation: element.UnifyQLOperation.Query,
 			Query:     node.ToTable,
 			Where:     fmt.Sprintf("%s.%s IN {%s}", node.ToTable, node.ToField, dependencyId),
 			Dependency: map[string]ExecutionPlan{
 				dependencyId: *plan,
 			},
-		}, nil
+		}
 	}
+	return &newPlan, nil
+}
+
+func unique(s []string) []string {
+	inResult := make(map[string]bool)
+	var result []string
+	for _, str := range s {
+		if _, ok := inResult[str]; !ok {
+			inResult[str] = true
+			result = append(result, str)
+		}
+	}
+	return result
 }

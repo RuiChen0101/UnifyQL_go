@@ -3,10 +3,10 @@ package relation_linking_test
 import (
 	"testing"
 
-	"github.com/RuiChen0101/unfiyql/internal/expression_tree"
-	"github.com/RuiChen0101/unfiyql/internal/relation_chain"
-	"github.com/RuiChen0101/unfiyql/internal/relation_linking"
-	"github.com/RuiChen0101/unfiyql/pkg/element"
+	"github.com/RuiChen0101/UnifyQL_go/internal/expression_tree"
+	"github.com/RuiChen0101/UnifyQL_go/internal/relation_chain"
+	"github.com/RuiChen0101/UnifyQL_go/internal/relation_linking"
+	"github.com/RuiChen0101/UnifyQL_go/pkg/element"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -17,8 +17,8 @@ func TestLinkWithoutCondition(t *testing.T) {
 		OrderBy:     []string{"tableA.fieldA3 DESC"},
 		Limit:       []int{0, 100},
 	}
-	tree, _ := expression_tree.ParseExpressionTree(el)
-	rc, _ := relation_chain.BuildRelationChain(el)
+	tree, _ := expression_tree.ParseExpressionTree(&el)
+	rc, _ := relation_chain.BuildRelationChain(&el)
 
 	linker := relation_linking.NewRelationLinker(rc, tree)
 	resultTable, err := linker.Link()
@@ -37,8 +37,8 @@ func TestLinkSingleCondition(t *testing.T) {
 		Link:        []string{"tableC.fieldC=tableB.fieldB1", "tableD.fieldD=tableA.fieldA1", "tableA.fieldA2=tableB.fieldB2"},
 		Where:       "(tableC.fieldC1 & 2) != 0",
 	}
-	tree, _ := expression_tree.ParseExpressionTree(el)
-	rc, _ := relation_chain.BuildRelationChain(el)
+	tree, _ := expression_tree.ParseExpressionTree(&el)
+	rc, _ := relation_chain.BuildRelationChain(&el)
 
 	linker := relation_linking.NewRelationLinker(rc, tree)
 	resultTable, err := linker.Link()
@@ -66,8 +66,8 @@ func TestLinkBinaryOpNode(t *testing.T) {
 		Where:       "tableA.fieldA = 0 AND tableD.fieldD1 = 1",
 	}
 
-	tree, _ := expression_tree.ParseExpressionTree(el)
-	rc, _ := relation_chain.BuildRelationChain(el)
+	tree, _ := expression_tree.ParseExpressionTree(&el)
+	rc, _ := relation_chain.BuildRelationChain(&el)
 
 	linker := relation_linking.NewRelationLinker(rc, tree)
 	resultTable, err := linker.Link()

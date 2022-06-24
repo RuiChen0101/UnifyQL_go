@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/RuiChen0101/unfiyql/pkg/element"
+	"github.com/RuiChen0101/UnifyQL_go/pkg/element"
 )
 
 func ConvertToSQL(unifyQl string) (string, error) {

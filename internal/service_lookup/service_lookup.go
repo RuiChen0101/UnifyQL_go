@@ -1,6 +1,6 @@
 package service_lookup
 
-import "github.com/RuiChen0101/unfiyql/pkg/service_config"
+import "github.com/RuiChen0101/UnifyQL_go/pkg/service_config"
 
 type ServiceLookup struct {
 	source service_config.ServiceConfigSource

@@ -1,11 +1,11 @@
 package expression_tree
 
 import (
-	"github.com/RuiChen0101/unfiyql/internal/utility"
-	"github.com/RuiChen0101/unfiyql/pkg/element"
+	"github.com/RuiChen0101/UnifyQL_go/internal/utility"
+	"github.com/RuiChen0101/UnifyQL_go/pkg/element"
 )
 
-func ParseExpressionTree(el element.UnifyQLElement) (ExpressionTreeNode, error) {
+func ParseExpressionTree(el *element.UnifyQLElement) (ExpressionTreeNode, error) {
 	outputNode := OutputTargetNode{
 		Operation:    el.Operation,
 		OutputTarget: el.QueryTarget,

@@ -3,8 +3,8 @@ package relation_chain_test
 import (
 	"testing"
 
-	"github.com/RuiChen0101/unfiyql/internal/relation_chain"
-	"github.com/RuiChen0101/unfiyql/pkg/element"
+	"github.com/RuiChen0101/UnifyQL_go/internal/relation_chain"
+	"github.com/RuiChen0101/UnifyQL_go/pkg/element"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -15,7 +15,7 @@ func TestFindLCA(t *testing.T) {
 		With:        []string{"tableB", "tableC", "tableD"},
 		Link:        []string{"tableC.fieldC=tableB.fieldB1", "tableD.fieldD=tableA.fieldA1", "tableA.fieldA2=tableB.fieldB2"},
 	}
-	rc, _ := relation_chain.BuildRelationChain(el)
+	rc, _ := relation_chain.BuildRelationChain(&el)
 
 	lca1, err := rc.FindLowestCommonParent("tableC", "tableA")
 	assert.Nil(t, err)
@@ -37,7 +37,7 @@ func TestFindRelationPath(t *testing.T) {
 		With:        []string{"tableB", "tableC", "tableD"},
 		Link:        []string{"tableC.fieldC=tableB.fieldB1", "tableD.fieldD=tableA.fieldA1", "tableA.fieldA2=tableB.fieldB2"},
 	}
-	rc, _ := relation_chain.BuildRelationChain(el)
+	rc, _ := relation_chain.BuildRelationChain(&el)
 
 	path1 := rc.FindRelationPath("tableA", "tableC")
 	expect1 := []relation_chain.RelationChainNode{
@@ -78,7 +78,7 @@ func TestIsParentOfAndIsDescendantOf(t *testing.T) {
 		With:        []string{"tableB", "tableC", "tableD"},
 		Link:        []string{"tableC.fieldC=tableB.fieldB1", "tableD.fieldD=tableA.fieldA1", "tableA.fieldA2=tableB.fieldB2"},
 	}
-	rc, _ := relation_chain.BuildRelationChain(el)
+	rc, _ := relation_chain.BuildRelationChain(&el)
 
 	assert.True(t, rc.IsParentOf("tableA", "tableC"))
 	assert.False(t, rc.IsParentOf("tableC", "tableC"))

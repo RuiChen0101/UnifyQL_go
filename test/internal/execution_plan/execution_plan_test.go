@@ -4,14 +4,14 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/RuiChen0101/unfiyql/internal/execution_plan"
-	"github.com/RuiChen0101/unfiyql/internal/expression_tree"
-	"github.com/RuiChen0101/unfiyql/internal/relation_chain"
-	"github.com/RuiChen0101/unfiyql/internal/relation_linking"
-	"github.com/RuiChen0101/unfiyql/internal/service_lookup"
-	"github.com/RuiChen0101/unfiyql/pkg/element"
-	"github.com/RuiChen0101/unfiyql/pkg/service_config"
-	"github.com/RuiChen0101/unfiyql/test/fake"
+	"github.com/RuiChen0101/UnifyQL_go/internal/execution_plan"
+	"github.com/RuiChen0101/UnifyQL_go/internal/expression_tree"
+	"github.com/RuiChen0101/UnifyQL_go/internal/relation_chain"
+	"github.com/RuiChen0101/UnifyQL_go/internal/relation_linking"
+	"github.com/RuiChen0101/UnifyQL_go/internal/service_lookup"
+	"github.com/RuiChen0101/UnifyQL_go/pkg/element"
+	"github.com/RuiChen0101/UnifyQL_go/pkg/service_config"
+	"github.com/RuiChen0101/UnifyQL_go/test/fake"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -27,13 +27,13 @@ func TestGenerateWithoutCondition(t *testing.T) {
 	conf, _ := service_config.NewFileServiceConfigSource(path)
 	lookup := service_lookup.NewServiceLookup(conf)
 
-	tree, _ := expression_tree.ParseExpressionTree(el)
-	rc, _ := relation_chain.BuildRelationChain(el)
+	tree, _ := expression_tree.ParseExpressionTree(&el)
+	rc, _ := relation_chain.BuildRelationChain(&el)
 	linker := relation_linking.NewRelationLinker(rc, tree)
 	linker.Link()
 	linkedTree := linker.GetExpressionTree()
 
-	plan, err := execution_plan.GenerateExecutionPlan(&linkedTree, &lookup, fakeId)
+	plan, err := execution_plan.GenerateExecutionPlan(linkedTree, &lookup, fakeId)
 
 	assert.Nil(t, err)
 
@@ -54,13 +54,13 @@ func TestGenerateSpecialOperation(t *testing.T) {
 	conf, _ := service_config.NewFileServiceConfigSource(path)
 	lookup := service_lookup.NewServiceLookup(conf)
 
-	tree, _ := expression_tree.ParseExpressionTree(el)
-	rc, _ := relation_chain.BuildRelationChain(el)
+	tree, _ := expression_tree.ParseExpressionTree(&el)
+	rc, _ := relation_chain.BuildRelationChain(&el)
 	linker := relation_linking.NewRelationLinker(rc, tree)
 	linker.Link()
 	linkedTree := linker.GetExpressionTree()
 
-	plan, err := execution_plan.GenerateExecutionPlan(&linkedTree, &lookup, fakeId)
+	plan, err := execution_plan.GenerateExecutionPlan(linkedTree, &lookup, fakeId)
 
 	assert.Nil(t, err)
 
@@ -81,13 +81,13 @@ func TestGenerateSingleConditionInSameService(t *testing.T) {
 	conf, _ := service_config.NewFileServiceConfigSource(path)
 	lookup := service_lookup.NewServiceLookup(conf)
 
-	tree, _ := expression_tree.ParseExpressionTree(el)
-	rc, _ := relation_chain.BuildRelationChain(el)
+	tree, _ := expression_tree.ParseExpressionTree(&el)
+	rc, _ := relation_chain.BuildRelationChain(&el)
 	linker := relation_linking.NewRelationLinker(rc, tree)
 	linker.Link()
 	linkedTree := linker.GetExpressionTree()
 
-	plan, err := execution_plan.GenerateExecutionPlan(&linkedTree, &lookup, fakeId)
+	plan, err := execution_plan.GenerateExecutionPlan(linkedTree, &lookup, fakeId)
 	assert.Nil(t, err)
 
 	assert.Equal(t, element.UnifyQLOperation.Query, plan.Operation)
@@ -110,13 +110,13 @@ func TestGenerateSingleConditionFromDifferentService(t *testing.T) {
 	conf, _ := service_config.NewFileServiceConfigSource(path)
 	lookup := service_lookup.NewServiceLookup(conf)
 
-	tree, _ := expression_tree.ParseExpressionTree(el)
-	rc, _ := relation_chain.BuildRelationChain(el)
+	tree, _ := expression_tree.ParseExpressionTree(&el)
+	rc, _ := relation_chain.BuildRelationChain(&el)
 	linker := relation_linking.NewRelationLinker(rc, tree)
 	linker.Link()
 	linkedTree := linker.GetExpressionTree()
 
-	plan, err := execution_plan.GenerateExecutionPlan(&linkedTree, &lookup, fakeId)
+	plan, err := execution_plan.GenerateExecutionPlan(linkedTree, &lookup, fakeId)
 	assert.Nil(t, err)
 
 	depPlan := plan.Dependency["12345678"]
@@ -139,13 +139,13 @@ func TestGenerateMultipleCondition(t *testing.T) {
 	conf, _ := service_config.NewFileServiceConfigSource(path)
 	lookup := service_lookup.NewServiceLookup(conf)
 
-	tree, _ := expression_tree.ParseExpressionTree(el)
-	rc, _ := relation_chain.BuildRelationChain(el)
+	tree, _ := expression_tree.ParseExpressionTree(&el)
+	rc, _ := relation_chain.BuildRelationChain(&el)
 	linker := relation_linking.NewRelationLinker(rc, tree)
 	linker.Link()
 	linkedTree := linker.GetExpressionTree()
 
-	plan, err := execution_plan.GenerateExecutionPlan(&linkedTree, &lookup, fakeId)
+	plan, err := execution_plan.GenerateExecutionPlan(linkedTree, &lookup, fakeId)
 	assert.Nil(t, err)
 
 	depPlan := plan.Dependency["12345678"]

@@ -1,4 +1,4 @@
-module github.com/RuiChen0101/unfiyql
+module github.com/RuiChen0101/UnifyQL_go
 
 go 1.18
 
