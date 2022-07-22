@@ -1,6 +1,8 @@
 package unifyql
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"strings"
 
 	"github.com/RuiChen0101/UnifyQL_go/internal/execution_plan"
@@ -35,6 +37,20 @@ func NewUnifyQl(
 
 func (uql *UnifyQl) Query(query string) ([]interface{}, error) {
 	serviceLookup := service_lookup.NewServiceLookup(uql.configSource)
+
+	shaByte := sha256.Sum256([]byte(query))
+	sha := hex.EncodeToString(shaByte[:])
+	if uql.cacheManager != nil {
+		if plan, ok := uql.cacheManager.Get(sha); ok {
+			result, err := plan_executor.ExecutePlan("root", plan, serviceLookup, uql.fetchProxy)
+			if err != nil {
+				return nil, err
+			}
+
+			return result.Data, nil
+		}
+	}
+
 	idGenerator := utility.DefaultIdGenerator{}
 	element, err := element.ExtractElement(strings.Replace(query, "\n", " ", -1))
 	if err != nil {
@@ -65,6 +81,10 @@ func (uql *UnifyQl) Query(query string) ([]interface{}, error) {
 	result, err := plan_executor.ExecutePlan("root", executionPlan, serviceLookup, uql.fetchProxy)
 	if err != nil {
 		return nil, err
+	}
+
+	if uql.cacheManager != nil {
+		uql.cacheManager.Set(sha, executionPlan)
 	}
 
 	return result.Data, nil

@@ -4,6 +4,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/RuiChen0101/UnifyQL_go/pkg/cache"
 	"github.com/RuiChen0101/UnifyQL_go/pkg/service_config"
 	"github.com/RuiChen0101/UnifyQL_go/pkg/unifyql"
 	"github.com/RuiChen0101/UnifyQL_go/test/fake"
@@ -27,6 +28,30 @@ func TestQueryWithoutCondition(t *testing.T) {
 
 	assert.Equal(t, "http://localhost:5000/query", fetchProxy.GetRecord(0).Url)
 	assert.Equal(t, "QUERY tableA ORDER BY tableA.fieldA3 DESC LIMIT 0,100", fetchProxy.GetRecord(0).UqlPayload)
+}
+
+func TestQueryWithCacheManager(t *testing.T) {
+	query := "QUERY tableA"
+
+	path, _ := filepath.Abs("../../data/serviceConfig.json")
+	conf, _ := service_config.NewFileServiceConfigSource(path)
+	cache := cache.NewDefaultExecutionPlanCache()
+	fetchProxy := fake.NewFakeFetchProxy([]string{"[{ \"fieldA\": \"fieldA\", \"fieldA1\": \"fieldA1\", \"fieldA2\": \"fieldA2\" }]"})
+
+	uql := unifyql.NewUnifyQl(conf, fetchProxy, cache)
+	result, err := uql.Query(query)
+
+	assert.Nil(t, err)
+	assert.EqualValues(t, map[string]interface{}{
+		"fieldA": "fieldA", "fieldA1": "fieldA1", "fieldA2": "fieldA2",
+	}, result[0])
+
+	assert.Equal(t, "http://localhost:5000/query", fetchProxy.GetRecord(0).Url)
+	assert.Equal(t, "QUERY tableA", fetchProxy.GetRecord(0).UqlPayload)
+
+	plan, ok := cache.Get("26e163cbc7dc6bb34f615c95b60676ae767a55bbc1f9afe997e56ebd90efb7c7")
+	assert.True(t, ok)
+	assert.Equal(t, "tableA", plan.Query)
 }
 
 func TestCountQuery(t *testing.T) {

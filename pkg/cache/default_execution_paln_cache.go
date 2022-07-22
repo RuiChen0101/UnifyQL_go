@@ -5,16 +5,12 @@ import (
 )
 
 type DefaultExecutionPlanCache struct {
-	data     map[string]*execution_plan.ExecutionPlan
-	hits     map[string]int
-	maxCache int
+	data map[string]*execution_plan.ExecutionPlan
 }
 
 func NewDefaultExecutionPlanCache() *DefaultExecutionPlanCache {
 	return &DefaultExecutionPlanCache{
-		data:     map[string]*execution_plan.ExecutionPlan{},
-		hits:     map[string]int{},
-		maxCache: 100,
+		data: map[string]*execution_plan.ExecutionPlan{},
 	}
 }
 
@@ -22,10 +18,11 @@ func (cache *DefaultExecutionPlanCache) Set(key string, plan *execution_plan.Exe
 	cache.data[key] = plan
 }
 
-func (cache *DefaultExecutionPlanCache) Get(key string) (*execution_plan.ExecutionPlan, error) {
-
+func (cache *DefaultExecutionPlanCache) Get(key string) (*execution_plan.ExecutionPlan, bool) {
+	value, ok := cache.data[key]
+	return value, ok
 }
 
-func (cache *DefaultExecutionPlanCache) FreeUnused() {
-
+func (cache *DefaultExecutionPlanCache) FreeSpace() {
+	cache.data = map[string]*execution_plan.ExecutionPlan{}
 }
