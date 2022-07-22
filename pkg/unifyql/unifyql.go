@@ -10,14 +10,33 @@ import (
 	"github.com/RuiChen0101/UnifyQL_go/internal/relation_linking"
 	"github.com/RuiChen0101/UnifyQL_go/internal/service_lookup"
 	"github.com/RuiChen0101/UnifyQL_go/internal/utility"
+	"github.com/RuiChen0101/UnifyQL_go/pkg/cache"
 	"github.com/RuiChen0101/UnifyQL_go/pkg/element"
 	"github.com/RuiChen0101/UnifyQL_go/pkg/service_config"
 )
 
-func Query(uql string, configSource service_config.ServiceConfigSource, fetchProxy utility.FetchProxy) ([]interface{}, error) {
-	serviceLookup := service_lookup.NewServiceLookup(configSource)
+type UnifyQl struct {
+	configSource service_config.ServiceConfigSource
+	fetchProxy   utility.FetchProxy
+	cacheManager cache.ExecutionPlanCache
+}
+
+func NewUnifyQl(
+	configSource service_config.ServiceConfigSource,
+	fetchProxy utility.FetchProxy,
+	cacheManager cache.ExecutionPlanCache,
+) UnifyQl {
+	return UnifyQl{
+		configSource: configSource,
+		fetchProxy:   fetchProxy,
+		cacheManager: cacheManager,
+	}
+}
+
+func (uql *UnifyQl) Query(query string) ([]interface{}, error) {
+	serviceLookup := service_lookup.NewServiceLookup(uql.configSource)
 	idGenerator := utility.DefaultIdGenerator{}
-	element, err := element.ExtractElement(strings.Replace(uql, "\n", " ", -1))
+	element, err := element.ExtractElement(strings.Replace(query, "\n", " ", -1))
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +62,7 @@ func Query(uql string, configSource service_config.ServiceConfigSource, fetchPro
 		return nil, err
 	}
 
-	result, err := plan_executor.ExecutePlan("root", executionPlan, serviceLookup, fetchProxy)
+	result, err := plan_executor.ExecutePlan("root", executionPlan, serviceLookup, uql.fetchProxy)
 	if err != nil {
 		return nil, err
 	}

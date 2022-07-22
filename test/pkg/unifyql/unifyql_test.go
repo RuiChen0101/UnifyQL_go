@@ -17,7 +17,8 @@ func TestQueryWithoutCondition(t *testing.T) {
 	conf, _ := service_config.NewFileServiceConfigSource(path)
 	fetchProxy := fake.NewFakeFetchProxy([]string{"[{ \"fieldA\": \"fieldA\", \"fieldA1\": \"fieldA1\", \"fieldA2\": \"fieldA2\" }]"})
 
-	result, err := unifyql.Query(query, conf, fetchProxy)
+	uql := unifyql.NewUnifyQl(conf, fetchProxy, nil)
+	result, err := uql.Query(query)
 
 	assert.Nil(t, err)
 	assert.EqualValues(t, map[string]interface{}{
@@ -35,7 +36,8 @@ func TestCountQuery(t *testing.T) {
 	conf, _ := service_config.NewFileServiceConfigSource(path)
 	fetchProxy := fake.NewFakeFetchProxy([]string{"[{ \"count\": 10}]"})
 
-	result, err := unifyql.Query(query, conf, fetchProxy)
+	uql := unifyql.NewUnifyQl(conf, fetchProxy, nil)
+	result, err := uql.Query(query)
 
 	assert.Nil(t, err)
 	assert.EqualValues(t, map[string]interface{}{
@@ -53,7 +55,8 @@ func TestSumQuery(t *testing.T) {
 	conf, _ := service_config.NewFileServiceConfigSource(path)
 	fetchProxy := fake.NewFakeFetchProxy([]string{"[{ \"sum\": 10 }]"})
 
-	result, err := unifyql.Query(query, conf, fetchProxy)
+	uql := unifyql.NewUnifyQl(conf, fetchProxy, nil)
+	result, err := uql.Query(query)
 
 	assert.Nil(t, err)
 	assert.EqualValues(t, map[string]interface{}{
@@ -75,7 +78,8 @@ func TestComplexQuery(t *testing.T) {
 		"[{ \"fieldA\": \"fieldA\", \"fieldA1\": \"fieldA1\", \"fieldA2\": \"fieldA2\" }]",
 	})
 
-	result, err := unifyql.Query(query, conf, fetchProxy)
+	uql := unifyql.NewUnifyQl(conf, fetchProxy, nil)
+	result, err := uql.Query(query)
 
 	assert.Nil(t, err)
 	assert.EqualValues(t, map[string]interface{}{
@@ -99,7 +103,8 @@ func TestVoidAuthorizationBypass(t *testing.T) {
 	conf, _ := service_config.NewFileServiceConfigSource(path)
 	fetchProxy := fake.NewFakeFetchProxy([]string{"[{ \"sum\": 10 }]"})
 
-	result, err := unifyql.Query(query, conf, fetchProxy)
+	uql := unifyql.NewUnifyQl(conf, fetchProxy, nil)
+	result, err := uql.Query(query)
 
 	assert.Nil(t, result)
 	assert.Equal(t, "ExpressionTreeBuilder: empty tree", err.Error())
@@ -112,7 +117,8 @@ func TestVoidMaliciousCommands(t *testing.T) {
 	conf, _ := service_config.NewFileServiceConfigSource(path)
 	fetchProxy := fake.NewFakeFetchProxy([]string{"[{ \"sum\": 10 }]"})
 
-	result, err := unifyql.Query(query, conf, fetchProxy)
+	uql := unifyql.NewUnifyQl(conf, fetchProxy, nil)
+	result, err := uql.Query(query)
 
 	assert.Nil(t, result)
 	assert.Equal(t, "ExpressionTreeBuilder: empty tree", err.Error())
