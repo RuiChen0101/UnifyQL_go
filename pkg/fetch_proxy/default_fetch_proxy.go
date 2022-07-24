@@ -11,7 +11,7 @@ type DefaultFetchProxy struct {
 	c *http.Client
 }
 
-func (fp *DefaultFetchProxy) Request(url string, uqlPayload string) ([]byte, error) {
+func (fp *DefaultFetchProxy) Request(id string, url string, uqlPayload string) ([]byte, error) {
 	resp, err := fp.c.Post(url, "text/plain", bytes.NewBuffer([]byte(uqlPayload)))
 	if err != nil {
 		return nil, err

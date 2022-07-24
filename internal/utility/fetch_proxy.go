@@ -1,5 +1,5 @@
 package utility
 
 type FetchProxy interface {
-	Request(url string, uqlPayload string) ([]byte, error)
+	Request(id string, url string, uqlPayload string) ([]byte, error)
 }

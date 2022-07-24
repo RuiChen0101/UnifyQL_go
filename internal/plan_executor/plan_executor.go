@@ -55,7 +55,7 @@ func ExecutePlan(id string, executionPlan *execution_plan.ExecutionPlan, service
 
 	uql := convertExecutionPlanToUnifyQL(executionPlan, dependencyIds, dependencyResults)
 
-	res, err := fetchProxy.Request(requestUrl, uql)
+	res, err := fetchProxy.Request(id, requestUrl, uql)
 	if err != nil {
 		return nil, err
 	}
