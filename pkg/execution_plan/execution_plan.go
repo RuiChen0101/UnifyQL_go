@@ -2,11 +2,11 @@ package execution_plan
 
 type ExecutionPlan struct {
 	Operation  int                      `json:"operation"`
-	Query      string                   `json:"query"`
-	With       []string                 `json:"with"`
-	Link       []string                 `json:"link"`
-	Where      string                   `json:"where"`
-	OrderBy    []string                 `json:"orderBy"`
-	Limit      []int                    `json:"limit"`
-	Dependency map[string]ExecutionPlan `json:"dependency"`
+	Query      string                   `json:"query,omitempty"`
+	With       []string                 `json:"with,omitempty"`
+	Link       []string                 `json:"link,omitempty"`
+	Where      string                   `json:"where,omitempty"`
+	OrderBy    []string                 `json:"orderBy,omitempty"`
+	Limit      []int                    `json:"limit,omitempty"`
+	Dependency map[string]ExecutionPlan `json:"dependency,omitempty"`
 }
