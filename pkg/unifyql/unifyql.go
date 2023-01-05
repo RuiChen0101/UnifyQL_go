@@ -18,20 +18,20 @@ import (
 )
 
 type UnifyQl struct {
-	configSource service_config.ServiceConfigSource
-	fetchProxy   utility.FetchProxy
-	cacheManager cache.ExecutionPlanCache
+	configSource   service_config.ServiceConfigSource
+	requestManager utility.RequestManager
+	cacheManager   cache.ExecutionPlanCache
 }
 
 func NewUnifyQl(
 	configSource service_config.ServiceConfigSource,
-	fetchProxy utility.FetchProxy,
+	requestManager utility.RequestManager,
 	cacheManager cache.ExecutionPlanCache,
 ) UnifyQl {
 	return UnifyQl{
-		configSource: configSource,
-		fetchProxy:   fetchProxy,
-		cacheManager: cacheManager,
+		configSource:   configSource,
+		requestManager: requestManager,
+		cacheManager:   cacheManager,
 	}
 }
 
@@ -42,7 +42,7 @@ func (uql *UnifyQl) Query(query string) ([]interface{}, error) {
 	sha := hex.EncodeToString(shaByte[:])
 	if uql.cacheManager != nil {
 		if plan, ok := uql.cacheManager.Get(sha); ok {
-			result, err := plan_executor.ExecutePlan("root", plan, serviceLookup, uql.fetchProxy)
+			result, err := plan_executor.ExecutePlan("root", plan, serviceLookup, uql.requestManager)
 			if err != nil {
 				return nil, err
 			}
@@ -78,7 +78,7 @@ func (uql *UnifyQl) Query(query string) ([]interface{}, error) {
 		return nil, err
 	}
 
-	result, err := plan_executor.ExecutePlan("root", executionPlan, serviceLookup, uql.fetchProxy)
+	result, err := plan_executor.ExecutePlan("root", executionPlan, serviceLookup, uql.requestManager)
 	if err != nil {
 		return nil, err
 	}

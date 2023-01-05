@@ -35,7 +35,7 @@ func TestExecuteWithoutCondition(t *testing.T) {
 	linkedTree := linker.GetExpressionTree()
 	plan, _ := execution_plan.GenerateExecutionPlan(linkedTree, &lookup, fakeId)
 
-	fetchProxy := fake.NewFakeFetchProxy([]string{"[{ \"fieldA\": \"fieldA\", \"fieldA1\": \"fieldA1\", \"fieldA2\": \"fieldA2\" }]"})
+	fetchProxy := fake.NewFakeRequestManager([]string{"[{ \"fieldA\": \"fieldA\", \"fieldA1\": \"fieldA1\", \"fieldA2\": \"fieldA2\" }]"})
 
 	result, err := plan_executor.ExecutePlan("root", plan, lookup, fetchProxy)
 
@@ -67,7 +67,7 @@ func TestExecuteSpecialOperation(t *testing.T) {
 	linkedTree := linker.GetExpressionTree()
 	plan, _ := execution_plan.GenerateExecutionPlan(linkedTree, &lookup, fakeId)
 
-	fetchProxy := fake.NewFakeFetchProxy([]string{"[{\"sum\": 10}]"})
+	fetchProxy := fake.NewFakeRequestManager([]string{"[{\"sum\": 10}]"})
 
 	result, err := plan_executor.ExecutePlan("root", plan, lookup, fetchProxy)
 
@@ -101,7 +101,7 @@ func TestExecuteSingleConditionInSameService(t *testing.T) {
 	linkedTree := linker.GetExpressionTree()
 	plan, _ := execution_plan.GenerateExecutionPlan(linkedTree, &lookup, fakeId)
 
-	fetchProxy := fake.NewFakeFetchProxy([]string{"[{ \"fieldA\": \"fieldA\", \"fieldA1\": \"fieldA1\", \"fieldA2\": \"fieldA2\" }]"})
+	fetchProxy := fake.NewFakeRequestManager([]string{"[{ \"fieldA\": \"fieldA\", \"fieldA1\": \"fieldA1\", \"fieldA2\": \"fieldA2\" }]"})
 
 	result, err := plan_executor.ExecutePlan("root", plan, lookup, fetchProxy)
 
@@ -135,7 +135,7 @@ func TestExecuteSingleConditionFromDifferentService(t *testing.T) {
 	linkedTree := linker.GetExpressionTree()
 	plan, _ := execution_plan.GenerateExecutionPlan(linkedTree, &lookup, fakeId)
 
-	fetchProxy := fake.NewFakeFetchProxy([]string{
+	fetchProxy := fake.NewFakeRequestManager([]string{
 		"[{ \"fieldD\":1 }, { \"fieldD\":2 }, { \"fieldD\":\"three\" }, { \"fieldD\":\"four\" }]",
 		"[{ \"fieldA\": \"fieldA\", \"fieldA1\": \"fieldA1\", \"fieldA2\": \"fieldA2\" }]",
 	})
@@ -175,7 +175,7 @@ func TestExecuteMultipleCondition(t *testing.T) {
 	linkedTree := linker.GetExpressionTree()
 	plan, _ := execution_plan.GenerateExecutionPlan(linkedTree, &lookup, fakeId)
 
-	fetchProxy := fake.NewFakeFetchProxy([]string{
+	fetchProxy := fake.NewFakeRequestManager([]string{
 		"[{ \"fieldD\":1 }, { \"fieldD\":2 }, { \"fieldD\":\"three\" }, { \"fieldD\":\"four\" }]",
 		"[{ \"fieldA\": \"fieldA\", \"fieldA1\": \"fieldA1\", \"fieldA2\": \"fieldA2\" }]",
 	})
@@ -215,7 +215,7 @@ func TestSubQueryErrorCascadeReturn(t *testing.T) {
 	linkedTree := linker.GetExpressionTree()
 	plan, _ := execution_plan.GenerateExecutionPlan(linkedTree, &lookup, fakeId)
 
-	fetchProxy := fake.NewFakeFetchProxy([]string{
+	fetchProxy := fake.NewFakeRequestManager([]string{
 		"[{ \"fieldD\":1 }, { \"fieldD\":2 }, { \"fieldD\":\"three\" }, { \"fieldD\":\"four\" }]",
 	})
 

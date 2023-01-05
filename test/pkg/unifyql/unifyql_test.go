@@ -16,7 +16,7 @@ func TestQueryWithoutCondition(t *testing.T) {
 
 	path, _ := filepath.Abs("../../data/serviceConfig.json")
 	conf, _ := service_config.NewFileServiceConfigSource(path)
-	fetchProxy := fake.NewFakeFetchProxy([]string{"[{ \"fieldA\": \"fieldA\", \"fieldA1\": \"fieldA1\", \"fieldA2\": \"fieldA2\" }]"})
+	fetchProxy := fake.NewFakeRequestManager([]string{"[{ \"fieldA\": \"fieldA\", \"fieldA1\": \"fieldA1\", \"fieldA2\": \"fieldA2\" }]"})
 
 	uql := unifyql.NewUnifyQl(conf, fetchProxy, nil)
 	result, err := uql.Query(query)
@@ -36,7 +36,7 @@ func TestQueryWithCacheManager(t *testing.T) {
 	path, _ := filepath.Abs("../../data/serviceConfig.json")
 	conf, _ := service_config.NewFileServiceConfigSource(path)
 	cache := cache.NewDefaultExecutionPlanCache()
-	fetchProxy := fake.NewFakeFetchProxy([]string{"[{ \"fieldA\": \"fieldA\", \"fieldA1\": \"fieldA1\", \"fieldA2\": \"fieldA2\" }]"})
+	fetchProxy := fake.NewFakeRequestManager([]string{"[{ \"fieldA\": \"fieldA\", \"fieldA1\": \"fieldA1\", \"fieldA2\": \"fieldA2\" }]"})
 
 	uql := unifyql.NewUnifyQl(conf, fetchProxy, cache)
 	result, err := uql.Query(query)
@@ -59,7 +59,7 @@ func TestCountQuery(t *testing.T) {
 
 	path, _ := filepath.Abs("../../data/serviceConfig.json")
 	conf, _ := service_config.NewFileServiceConfigSource(path)
-	fetchProxy := fake.NewFakeFetchProxy([]string{"[{ \"count\": 10}]"})
+	fetchProxy := fake.NewFakeRequestManager([]string{"[{ \"count\": 10}]"})
 
 	uql := unifyql.NewUnifyQl(conf, fetchProxy, nil)
 	result, err := uql.Query(query)
@@ -78,7 +78,7 @@ func TestSumQuery(t *testing.T) {
 
 	path, _ := filepath.Abs("../../data/serviceConfig.json")
 	conf, _ := service_config.NewFileServiceConfigSource(path)
-	fetchProxy := fake.NewFakeFetchProxy([]string{"[{ \"sum\": 10 }]"})
+	fetchProxy := fake.NewFakeRequestManager([]string{"[{ \"sum\": 10 }]"})
 
 	uql := unifyql.NewUnifyQl(conf, fetchProxy, nil)
 	result, err := uql.Query(query)
@@ -97,7 +97,7 @@ func TestComplexQuery(t *testing.T) {
 
 	path, _ := filepath.Abs("../../data/serviceConfig.json")
 	conf, _ := service_config.NewFileServiceConfigSource(path)
-	fetchProxy := fake.NewFakeFetchProxy([]string{
+	fetchProxy := fake.NewFakeRequestManager([]string{
 		"[{ \"fieldD\":5 }, { \"fieldD\":6 }, { \"fieldD\":7 }, { \"fieldD\":8 }]",
 		"[{ \"fieldD\":1 }, { \"fieldD\":2 }, { \"fieldD\":3 }, { \"fieldD\":4 }]",
 		"[{ \"fieldA\": \"fieldA\", \"fieldA1\": \"fieldA1\", \"fieldA2\": \"fieldA2\" }]",
@@ -126,7 +126,7 @@ func TestVoidAuthorizationBypass(t *testing.T) {
 
 	path, _ := filepath.Abs("../../data/serviceConfig.json")
 	conf, _ := service_config.NewFileServiceConfigSource(path)
-	fetchProxy := fake.NewFakeFetchProxy([]string{"[{ \"sum\": 10 }]"})
+	fetchProxy := fake.NewFakeRequestManager([]string{"[{ \"sum\": 10 }]"})
 
 	uql := unifyql.NewUnifyQl(conf, fetchProxy, nil)
 	result, err := uql.Query(query)
@@ -140,7 +140,7 @@ func TestVoidMaliciousCommands(t *testing.T) {
 
 	path, _ := filepath.Abs("../../data/serviceConfig.json")
 	conf, _ := service_config.NewFileServiceConfigSource(path)
-	fetchProxy := fake.NewFakeFetchProxy([]string{"[{ \"sum\": 10 }]"})
+	fetchProxy := fake.NewFakeRequestManager([]string{"[{ \"sum\": 10 }]"})
 
 	uql := unifyql.NewUnifyQl(conf, fetchProxy, nil)
 	result, err := uql.Query(query)

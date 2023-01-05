@@ -8,22 +8,22 @@ type FetchRequest struct {
 	UqlPayload string
 }
 
-type FakeFetchProxy struct {
+type FakeRequestManager struct {
 	expectRes []string
 	requests  []FetchRequest
 }
 
-func NewFakeFetchProxy(expectRes []string) *FakeFetchProxy {
-	return &FakeFetchProxy{
+func NewFakeRequestManager(expectRes []string) *FakeRequestManager {
+	return &FakeRequestManager{
 		expectRes: expectRes,
 	}
 }
 
-func (ffp *FakeFetchProxy) GetRecord(index int) FetchRequest {
+func (ffp *FakeRequestManager) GetRecord(index int) FetchRequest {
 	return ffp.requests[index]
 }
 
-func (ffp *FakeFetchProxy) Request(id string, url string, uqlPayload string) ([]byte, error) {
+func (ffp *FakeRequestManager) Request(id string, url string, uqlPayload string) ([]byte, error) {
 	if len(ffp.expectRes) <= 0 {
 		return nil, errors.New("Too many request")
 	}

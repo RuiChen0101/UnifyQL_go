@@ -18,7 +18,7 @@ type executionResult struct {
 	Data []interface{}
 }
 
-func ExecutePlan(id string, executionPlan *execution_plan.ExecutionPlan, serviceLookup service_lookup.ServiceLookup, fetchProxy utility.FetchProxy) (*executionResult, error) {
+func ExecutePlan(id string, executionPlan *execution_plan.ExecutionPlan, serviceLookup service_lookup.ServiceLookup, requestManager utility.RequestManager) (*executionResult, error) {
 	dependencyIds := []string{}
 	for _, k := range reflect.ValueOf(executionPlan.Dependency).MapKeys() {
 		dependencyIds = append(dependencyIds, k.String())
@@ -28,15 +28,15 @@ func ExecutePlan(id string, executionPlan *execution_plan.ExecutionPlan, service
 	errs := make(chan error, 1)
 	for _, id := range dependencyIds {
 		wg.Add(1)
-		go func(id string, plan execution_plan.ExecutionPlan, lookup service_lookup.ServiceLookup, fetch utility.FetchProxy) {
+		go func(id string, plan execution_plan.ExecutionPlan, lookup service_lookup.ServiceLookup, rm utility.RequestManager) {
 			defer wg.Done()
-			result, err := ExecutePlan(id, &plan, lookup, fetch)
+			result, err := ExecutePlan(id, &plan, lookup, rm)
 			if err != nil {
 				errs <- err
 				return
 			}
 			dependencyResults[result.Id] = result.Data
-		}(id, executionPlan.Dependency[id], serviceLookup, fetchProxy)
+		}(id, executionPlan.Dependency[id], serviceLookup, requestManager)
 	}
 	wg.Wait()
 	if len(errs) != 0 {
@@ -55,7 +55,7 @@ func ExecutePlan(id string, executionPlan *execution_plan.ExecutionPlan, service
 
 	uql := convertExecutionPlanToUnifyQL(executionPlan, dependencyIds, dependencyResults)
 
-	res, err := fetchProxy.Request(id, requestUrl, uql)
+	res, err := requestManager.Request(id, requestUrl, uql)
 	if err != nil {
 		return nil, err
 	}

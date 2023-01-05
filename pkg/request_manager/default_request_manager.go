@@ -3,15 +3,15 @@ package fetch_proxy
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
-type DefaultFetchProxy struct {
+type DefaultRequestManager struct {
 	c *http.Client
 }
 
-func (fp *DefaultFetchProxy) Request(id string, url string, uqlPayload string) ([]byte, error) {
+func (fp *DefaultRequestManager) Request(id string, url string, uqlPayload string) ([]byte, error) {
 	resp, err := fp.c.Post(url, "text/plain", bytes.NewBuffer([]byte(uqlPayload)))
 	if err != nil {
 		return nil, err
@@ -21,10 +21,10 @@ func (fp *DefaultFetchProxy) Request(id string, url string, uqlPayload string) (
 	if resp.StatusCode == http.StatusNotFound {
 		return []byte("[]"), nil
 	} else if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("FetchProxy: %s response %d when executing %s", url, resp.StatusCode, uqlPayload)
+		return nil, fmt.Errorf("RequestManager: %s response %d when executing %s", url, resp.StatusCode, uqlPayload)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 
 	if err != nil {
 		return nil, err
