@@ -1,7 +1,7 @@
 package cache
 
 import (
-	"github.com/RuiChen0101/UnifyQL_go/internal/execution_plan"
+	"github.com/RuiChen0101/UnifyQL_go/pkg/execution_plan"
 )
 
 type DefaultExecutionPlanCache struct {

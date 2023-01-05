@@ -8,20 +8,10 @@ import (
 	"github.com/RuiChen0101/UnifyQL_go/internal/service_lookup"
 	"github.com/RuiChen0101/UnifyQL_go/internal/utility"
 	"github.com/RuiChen0101/UnifyQL_go/pkg/element"
+	"github.com/RuiChen0101/UnifyQL_go/pkg/execution_plan"
 )
 
-type ExecutionPlan struct {
-	Operation  int
-	Query      string
-	With       []string
-	Link       []string
-	Where      string
-	OrderBy    []string
-	Limit      []int
-	Dependency map[string]ExecutionPlan
-}
-
-func GenerateExecutionPlan(tree expression_tree.ExpressionTreeNode, lookup *service_lookup.ServiceLookup, idGenerator utility.IdGenerator) (*ExecutionPlan, error) {
+func GenerateExecutionPlan(tree expression_tree.ExpressionTreeNode, lookup *service_lookup.ServiceLookup, idGenerator utility.IdGenerator) (*execution_plan.ExecutionPlan, error) {
 	if node, ok := tree.(*expression_tree.OutputTargetNode); ok {
 		return buildOutputTarget(node, lookup, idGenerator)
 	} else if node, ok := tree.(*expression_tree.BinaryOperatorNode); ok {
@@ -31,10 +21,10 @@ func GenerateExecutionPlan(tree expression_tree.ExpressionTreeNode, lookup *serv
 	} else if node, ok := tree.(*expression_tree.RelationNode); ok {
 		return buildRelation(node, lookup, idGenerator)
 	}
-	return nil, errors.New("ExecutionPlan: Invalid expression tree")
+	return nil, errors.New("execution_plan.ExecutionPlan: Invalid expression tree")
 }
 
-func buildOutputTarget(node *expression_tree.OutputTargetNode, lookup *service_lookup.ServiceLookup, idGenerator utility.IdGenerator) (*ExecutionPlan, error) {
+func buildOutputTarget(node *expression_tree.OutputTargetNode, lookup *service_lookup.ServiceLookup, idGenerator utility.IdGenerator) (*execution_plan.ExecutionPlan, error) {
 	var query string
 	if node.QueryField == "" {
 		query = node.OutputTarget
@@ -42,7 +32,7 @@ func buildOutputTarget(node *expression_tree.OutputTargetNode, lookup *service_l
 		query = node.OutputTarget + "." + node.QueryField
 	}
 	if node.GetLeftNode() == nil {
-		return &ExecutionPlan{
+		return &execution_plan.ExecutionPlan{
 			Operation: node.Operation,
 			Query:     query,
 			OrderBy:   node.OrderBy,
@@ -55,7 +45,7 @@ func buildOutputTarget(node *expression_tree.OutputTargetNode, lookup *service_l
 		return nil, err
 	}
 
-	return &ExecutionPlan{
+	return &execution_plan.ExecutionPlan{
 		Operation:  node.Operation,
 		Query:      query,
 		With:       plan.With,
@@ -67,9 +57,9 @@ func buildOutputTarget(node *expression_tree.OutputTargetNode, lookup *service_l
 	}, nil
 }
 
-func buildBinaryOperator(node *expression_tree.BinaryOperatorNode, lookup *service_lookup.ServiceLookup, idGenerator utility.IdGenerator) (*ExecutionPlan, error) {
+func buildBinaryOperator(node *expression_tree.BinaryOperatorNode, lookup *service_lookup.ServiceLookup, idGenerator utility.IdGenerator) (*execution_plan.ExecutionPlan, error) {
 	if node.GetLeftNode() == nil || node.GetRightNode() == nil {
-		return nil, errors.New("ExecutionPlan: Invalid expression tree")
+		return nil, errors.New("execution_plan.ExecutionPlan: Invalid expression tree")
 	}
 	leftPlan, err := GenerateExecutionPlan(*node.GetLeftNode(), lookup, idGenerator)
 	if err != nil {
@@ -81,7 +71,7 @@ func buildBinaryOperator(node *expression_tree.BinaryOperatorNode, lookup *servi
 		return nil, err
 	}
 
-	plan := &ExecutionPlan{
+	plan := &execution_plan.ExecutionPlan{
 		Operation:  element.UnifyQLOperation.Query,
 		Query:      node.OutputTarget,
 		With:       unique(append(leftPlan.With, rightPlan.With...)),
@@ -97,23 +87,23 @@ func buildBinaryOperator(node *expression_tree.BinaryOperatorNode, lookup *servi
 	return plan, nil
 }
 
-func buildCondition(node *expression_tree.ConditionNode, lookup *service_lookup.ServiceLookup, idGenerator utility.IdGenerator) (*ExecutionPlan, error) {
-	return &ExecutionPlan{
+func buildCondition(node *expression_tree.ConditionNode, lookup *service_lookup.ServiceLookup, idGenerator utility.IdGenerator) (*execution_plan.ExecutionPlan, error) {
+	return &execution_plan.ExecutionPlan{
 		Operation:  element.UnifyQLOperation.Query,
 		Query:      node.OutputTarget,
 		Where:      node.ConditionStr,
-		Dependency: map[string]ExecutionPlan{},
+		Dependency: map[string]execution_plan.ExecutionPlan{},
 	}, nil
 }
 
-func buildRelation(node *expression_tree.RelationNode, lookup *service_lookup.ServiceLookup, idGenerator utility.IdGenerator) (*ExecutionPlan, error) {
+func buildRelation(node *expression_tree.RelationNode, lookup *service_lookup.ServiceLookup, idGenerator utility.IdGenerator) (*execution_plan.ExecutionPlan, error) {
 	plan, err := GenerateExecutionPlan(*node.GetLeftNode(), lookup, idGenerator)
 	if err != nil {
 		return nil, err
 	}
-	var newPlan ExecutionPlan
+	var newPlan execution_plan.ExecutionPlan
 	if lookup.IsAllFromSameService([]string{plan.Query, node.ToTable}) {
-		newPlan = ExecutionPlan{
+		newPlan = execution_plan.ExecutionPlan{
 			Operation:  element.UnifyQLOperation.Query,
 			Query:      node.ToTable,
 			With:       unique(append(plan.With, plan.Query)),
@@ -124,11 +114,11 @@ func buildRelation(node *expression_tree.RelationNode, lookup *service_lookup.Se
 	} else {
 		plan.Query = node.FromTable + "." + node.FromField
 		dependencyId := idGenerator.NanoId8()
-		newPlan = ExecutionPlan{
+		newPlan = execution_plan.ExecutionPlan{
 			Operation: element.UnifyQLOperation.Query,
 			Query:     node.ToTable,
 			Where:     fmt.Sprintf("%s.%s IN {%s}", node.ToTable, node.ToField, dependencyId),
-			Dependency: map[string]ExecutionPlan{
+			Dependency: map[string]execution_plan.ExecutionPlan{
 				dependencyId: *plan,
 			},
 		}
